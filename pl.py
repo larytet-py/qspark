@@ -10,6 +10,9 @@ class Position:
         self.buys = deque()  
 
     def trade(self, trade):
+        # mutex lock
+
+        
         if trade["side"] == "Buy":
             self.buy(trade["quantity"], trade["price"])
         else:
@@ -41,6 +44,7 @@ class Position:
                 self.buys[0] = (buy_qty - match_qty, buy_price)  # Update remaining buy
             
         self.size -= quantity
+        self.realized_pnl = realized_pnl
         print(f"Sell {quantity}, {price}, {self.buys}, {self.realized_pnl}")
     
 
@@ -64,7 +68,7 @@ trades = [
     {"stock": "AAPL", "side": "Buy", "quantity": 200, "price": 221.05},
     {"stock": "AAPL", "side": "Sell", "quantity": 50, "price": 221.10},
     {"stock": "AAPL", "side": "Sell", "quantity": 100, "price": 221.00},
-    {"stock": "AAPL", "side": "Buy", "quantity": 100, "price": 203.50},
+    {"stock": "IBM", "side": "Buy", "quantity": 100, "price": 203.50},
 ]
 
 for trade in trades:
