@@ -1,13 +1,12 @@
 from collections import deque, defaultdict
 from typing import Dict
-from decimal import Decimal
 
 class Position:
     def __init__(self, stock: str, tick_size: float):
         self.stock = stock
         self.size = 0
         self.realized_pnl = 0.0
-        self.tick_size = tick_size
+        self.tick = Tick(tick_size)
 
         # FIFO queue for buys
         self.buys = deque()  
@@ -32,8 +31,8 @@ class Position:
             match_qty = min(sell_qty, buy_qty)
             
             # Calculate realized P&L for the matched quantity
-            pl = self.to_tick(price) - self.to_tick(buy_price)
-            realized_pnl += self.from_tick(match_qty * pl)
+            pl = self.tick(price) - self.tick(buy_price)
+            realized_pnl += self.tick.to_float(match_qty * pl)
             print(f"\tmatch_qty={match_qty}, sell_price={price}, buy_price={buy_price}, {pl}, realized_pnl={realized_pnl}")
             
             # Update remaining quantities
@@ -49,12 +48,22 @@ class Position:
         print(f"Sell {self.stock} {quantity}, {price}, {self.buys}, {self.realized_pnl}")
 
     def to_tick(self, v: float) -> int:
-        return round(v*self.tick_size)
+        return round(v*self.tick)
 
     def from_tick(self, v: int) -> float:
-        return v/self.tick_size
+        return v/self.tick
 
 
+class Tick:
+    def __init__(self, tick_size: float):
+        self.tick_size = tick_size
+
+    def __call__(self, v: float) -> int:
+        return round(v * self.tick_size)
+
+    def to_float(self, v: int) -> float:
+        return v / self.tick_size
+    
 positions: Dict[str, Position] = {}
 
 def calc_pnl(trade: dict):
