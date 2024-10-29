@@ -1,8 +1,8 @@
 from collections import deque, defaultdict
+from decimal import Decimal
 
 class Position:
-    def __init__(self, name: str):
-        self.name = name
+    def __init__(self):
         self.size = 0
         self.realized_pnl = 0.0
 
@@ -18,6 +18,7 @@ class Position:
     def buy(self, quantity, price):
         self.buys.append((quantity, price))
         self.size += quantity
+        print(f"Buy {quantity}, {price}, {self.buys}, {self.realized_pnl}")
 
     def sell(self, quantity, price):
         realized_pnl = 0.0
@@ -27,29 +28,31 @@ class Position:
             buy_qty, buy_price = self.buys[0]
             match_qty = min(sell_qty, buy_qty)
             
-            # Calculate realized P&L for this matched quantity
+            # Calculate realized P&L for the matched quantity
             realized_pnl += match_qty * (price - buy_price)
+            print(f"match_qty={match_qty}, sell_price={price}, buy_price={buy_price}, {price - buy_price}, realized_pnl={realized_pnl}")
             
             # Update remaining quantities
             sell_qty -= match_qty
             if match_qty == buy_qty:
-                self.buys.popleft()  # Remove fully used buy
+                # Remove the completely realized buy order
+                self.buys.popleft()  
             else:
                 self.buys[0] = (buy_qty - match_qty, buy_price)  # Update remaining buy
             
         self.size -= quantity
-        self.realized_pnl += realized_pnl
+        print(f"Sell {quantity}, {price}, {self.buys}, {self.realized_pnl}")
     
 
 positions = defaultdict(Position)
 
 def calc_pnl(trade: dict):
-    name = trade["name"]
-    position = positions[name]
-    if  trade_stock not in positions:
-        positions[name] = Position
+    stock = trade["stock"]
+    position = positions[stock]
+    if  stock not in positions:
+        positions[stock] = Position()
     
-    position = positions[trade_stock]
+    position = positions[stock]
     position.trade(trade)
     
     return position.realized_pnl
@@ -65,7 +68,5 @@ trades = [
 ]
 
 for trade in trades:
-    trade_stock = trade["stock"]
     realized_pnl = calc_pnl(trade)
-    print(realized_pnl)  
 
