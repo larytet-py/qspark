@@ -20,7 +20,7 @@ class Position:
     def buy(self, quantity, price):
         self.buys.append((quantity, price))
         self.size += quantity
-        print(f"Buy {self.stock} {quantity}, {price}, {self.buys}, {self.realized_pnl}")
+        print(f"Buy {self.stock} {quantity}, {price}, {self.buys}, ${self.realized_pnl}")
 
     def sell(self, quantity, price):
         realized_pnl = 0.0
@@ -33,7 +33,7 @@ class Position:
             # Calculate realized P&L for the matched quantity
             pl = self.tick(price) - self.tick(buy_price)
             realized_pnl += match_qty * pl
-            print(f"\tmatch_qty={match_qty}, sell_price={price}, buy_price={buy_price}, {pl}, realized_pnl={realized_pnl}")
+            print(f"\tmatch_qty={match_qty}, sell_price={price}, buy_price={buy_price}, {pl}, realized_pnl={realized_pnl} ticks")
             
             # Update remaining quantities
             sell_qty -= match_qty
@@ -45,7 +45,7 @@ class Position:
             
         self.size -= quantity
         self.realized_pnl = self.tick.to_float(realized_pnl)
-        print(f"Sell {self.stock} {quantity}, {price}, {self.buys}, {self.realized_pnl}")
+        print(f"Sell {self.stock} {quantity}, {price}, {self.buys}, ${self.realized_pnl}")
 
     def to_tick(self, v: float) -> int:
         return round(v*self.tick)
