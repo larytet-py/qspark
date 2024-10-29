@@ -34,7 +34,7 @@ class Position:
             # Calculate realized P&L for the matched quantity
             pl = self.to_tick(price) - self.to_tick(buy_price)
             realized_pnl += self.from_tick(match_qty * pl)
-            print(f"match_qty={match_qty}, sell_price={price}, buy_price={buy_price}, {pl}, realized_pnl={realized_pnl}")
+            print(f"\tmatch_qty={match_qty}, sell_price={price}, buy_price={buy_price}, {pl}, realized_pnl={realized_pnl}")
             
             # Update remaining quantities
             sell_qty -= match_qty
