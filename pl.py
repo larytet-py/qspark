@@ -1,8 +1,10 @@
 from collections import deque, defaultdict
+from typing import Dict
 from decimal import Decimal
 
 class Position:
-    def __init__(self):
+    def __init__(self, stock: str):
+        self.stock = stock
         self.size = 0
         self.realized_pnl = 0.0
 
@@ -10,9 +12,6 @@ class Position:
         self.buys = deque()  
 
     def trade(self, trade):
-        # mutex lock
-
-        
         if trade["side"] == "Buy":
             self.buy(trade["quantity"], trade["price"])
         else:
@@ -21,7 +20,7 @@ class Position:
     def buy(self, quantity, price):
         self.buys.append((quantity, price))
         self.size += quantity
-        print(f"Buy {quantity}, {price}, {self.buys}, {self.realized_pnl}")
+        print(f"Buy {self.stock} {quantity}, {price}, {self.buys}, {self.realized_pnl}")
 
     def sell(self, quantity, price):
         realized_pnl = 0.0
@@ -45,16 +44,15 @@ class Position:
             
         self.size -= quantity
         self.realized_pnl = realized_pnl
-        print(f"Sell {quantity}, {price}, {self.buys}, {self.realized_pnl}")
+        print(f"Sell {self.stock} {quantity}, {price}, {self.buys}, {self.realized_pnl}")
     
 
-positions = defaultdict(Position)
+positions: Dict[str, Position] = {}
 
 def calc_pnl(trade: dict):
     stock = trade["stock"]
-    position = positions[stock]
     if  stock not in positions:
-        positions[stock] = Position()
+        positions[stock] = Position(stock)
     
     position = positions[stock]
     position.trade(trade)
