@@ -32,8 +32,9 @@ class Position:
             match_qty = min(sell_qty, buy_qty)
             
             # Calculate realized P&L for the matched quantity
-            realized_pnl += self.from_tick(match_qty * (self.to_tick(price) - self.to_tick(buy_price)))
-            print(f"match_qty={match_qty}, sell_price={price}, buy_price={buy_price}, {price - buy_price}, realized_pnl={realized_pnl}")
+            pl = self.to_tick(price) - self.to_tick(buy_price)
+            realized_pnl += self.from_tick(match_qty * pl)
+            print(f"match_qty={match_qty}, sell_price={price}, buy_price={buy_price}, {pl}, realized_pnl={realized_pnl}")
             
             # Update remaining quantities
             sell_qty -= match_qty
@@ -59,7 +60,7 @@ positions: Dict[str, Position] = {}
 def calc_pnl(trade: dict):
     stock = trade["stock"]
     if  stock not in positions:
-        positions[stock] = Position(stock)
+        positions[stock] = Position(stock, trade["tick_size"])
     
     position = positions[stock]
     position.trade(trade)
